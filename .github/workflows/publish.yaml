@@ -17,8 +17,15 @@ jobs:
       with:
         go-version: '1.20'
 
+    - name: Create version script
+      run: |
+        echo '#!/bin/bash' > get_version.sh
+        echo 'echo ${GITHUB_REF#refs/tags/}' >> get_version.sh
+        chmod +x get_version.sh
+
     - name: Get the version
-      run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+      id: get_version
+      run: echo "VERSION=$(./get_version.sh)" >> $GITHUB_ENV
 
     - name: Run tests
       run: go test ./...
