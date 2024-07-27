@@ -23,10 +23,12 @@ jobs:
     - name: Build
       run: go build ./...
 
+    - name: Extract version
+      run: echo "VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
+
     - name: Publish
       run: |
-        VERSION=${GITHUB_REF#refs/tags/}
-        echo "Publishing version: $VERSION"
-        GOPROXY=proxy.golang.org go list -m github.com/janpreet/kado-ai@$VERSION
+        echo "Publishing version: ${{ env.VERSION }}"
+        GOPROXY=proxy.golang.org go list -m github.com/janpreet/kado-ai@${{ env.VERSION }}
       env:
         GOPROXY: proxy.golang.org
