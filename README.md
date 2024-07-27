@@ -1,3 +1,4 @@
+[![Continuous Integration](https://github.com/janpreet/kado-ai/actions/workflows/ci.yaml/badge.svg)](https://github.com/janpreet/kado-ai/actions/workflows/ci.yaml)[![Publish to pkg.go.dev](https://github.com/janpreet/kado-ai/actions/workflows/publish.yaml/badge.svg)](https://github.com/janpreet/kado-ai/actions/workflows/publish.yaml)
 # Kado AI
 
 Kado AI is an AI-assisted infrastructure recommendation engine designed to analyze Terraform configurations, Ansible playbooks, OPA Rego policies, and Terraform plans. It leverages AI services to generate comprehensive infrastructure recommendations based on the provided code and configurations.
