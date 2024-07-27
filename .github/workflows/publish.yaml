@@ -17,16 +17,6 @@ jobs:
       with:
         go-version: '1.20'
 
-    - name: Create version script
-      run: |
-        echo '#!/bin/bash' > get_version.sh
-        echo 'echo ${GITHUB_REF#refs/tags/}' >> get_version.sh
-        chmod +x get_version.sh
-
-    - name: Get the version
-      id: get_version
-      run: echo "VERSION=$(./get_version.sh)" >> $GITHUB_ENV
-
     - name: Run tests
       run: go test ./...
 
@@ -35,6 +25,8 @@ jobs:
 
     - name: Publish
       run: |
+        VERSION=${GITHUB_REF#refs/tags/}
+        echo "Publishing version: $VERSION"
         GOPROXY=proxy.golang.org go list -m github.com/janpreet/kado-ai@$VERSION
       env:
         GOPROXY: proxy.golang.org
