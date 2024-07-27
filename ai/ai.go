@@ -1,3 +1,15 @@
+// Package ai provides AI-powered infrastructure recommendations for DevOps workflows.
+//
+// It analyzes Terraform, Ansible, and OPA Rego configurations to optimize
+// infrastructure-as-code. This package is part of the Kado ecosystem and securely
+// leverages AI to provide intelligent insights for infrastructure management.
+//
+// Key features include:
+//   - AI-driven analysis of Infrastructure as Code (IaC) files
+//   - Secure handling and sanitization of sensitive data
+//   - Integration with major AI services like ChatGPT and Anthropic
+//   - Customizable configuration through .kdconfig files
+//   - Comprehensive infrastructure recommendations based on best practices
 package ai
 
 import (
