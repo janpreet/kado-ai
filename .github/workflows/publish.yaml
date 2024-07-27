@@ -1,49 +1,53 @@
-name: CI/CD
+name: Publish to pkg.go.dev
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
   release:
-    types: [ created ]
+    types: [created]
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Set up Go
-      uses: actions/setup-go@v2
-      with:
-        go-version: 1.17
-    - name: Run tests
-      run: make test
-
-  build:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Set up Go
-      uses: actions/setup-go@v2
-      with:
-        go-version: 1.17
-    - name: Build
-      run: make build
-
   publish:
-    needs: [test, build]
     runs-on: ubuntu-latest
-    if: github.event_name == 'release' && github.event.action == 'created'
     steps:
     - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0  
+
     - name: Set up Go
       uses: actions/setup-go@v2
       with:
         go-version: 1.17
+
+    - name: Get the version
+      id: get_version
+      run: echo ::set-output name=VERSION::${GITHUB_REF
+
+    - name: Check if tag exists
+      id: check_tag
+      run: |
+        git fetch --all --tags
+        if git rev-parse ${{ steps.get_version.outputs.VERSION }} >/dev/null 2>&1; then
+          echo "Tag already exists. Skipping tag creation."
+          echo ::set-output name=TAG_EXISTS::true
+        else
+          echo ::set-output name=TAG_EXISTS::false
+        fi
+
+    - name: Create tag if not exists
+      if: steps.check_tag.outputs.TAG_EXISTS == 'false'
+      run: |
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        git tag -a ${{ steps.get_version.outputs.VERSION }} -m "Release ${{ steps.get_version.outputs.VERSION }}"
+        git push origin ${{ steps.get_version.outputs.VERSION }}
+
+    - name: Run tests
+      run: go test ./...
+
+    - name: Build
+      run: go build ./...
+
     - name: Publish
       run: |
-        make publish
+        GOPROXY=proxy.golang.org go list -m github.com/janpreet/kado-ai@${{ steps.get_version.outputs.VERSION }}
       env:
         GOPROXY: proxy.golang.org
